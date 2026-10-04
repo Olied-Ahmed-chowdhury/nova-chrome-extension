@@ -1,16 +1,16 @@
-# ⚡ Nova Chrome Extension (Manifest V3)
+# ⚡ Nova - AI Web Assistant & Data Scraper (Manifest V3)
 
 <div align="center">
 
 ![Manifest V3](https://img.shields.io/badge/Manifest-V3-6366f1?style=for-the-badge&logo=googlechrome&logoColor=white)
-![Platform](https://img.shields.io/badge/Platform-Chromium%20%7C%20Edge%20%7C%20Brave-38bdf8?style=for-the-badge)
-![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-f7df1e?style=for-the-badge&logo=javascript&logoColor=black)
-![CSS3](https://img.shields.io/badge/Style-Glassmorphism%20CSS-a855f7?style=for-the-badge&logo=css3&logoColor=white)
-![License](https://img.shields.io/badge/License-MIT-10b981?style=for-the-badge)
+![Gemini AI](https://img.shields.io/badge/Google_Gemini-1.5_Flash-38bdf8?style=for-the-badge&logo=google&logoColor=white)
+![Export](https://img.shields.io/badge/Data_Export-Excel_|_PDF_|_JSON-10b981?style=for-the-badge)
+![Text to Speech](https://img.shields.io/badge/Audio-Text--to--Speech-f59e0b?style=for-the-badge)
+![License](https://img.shields.io/badge/License-MIT-a855f7?style=for-the-badge)
 
-**A modern, production-grade Chrome Extension template built with Google Manifest V3, complete with a dark glassmorphism popup, full settings sync, background service workers, and interactive content scripts.**
+**A modern, production-grade Chrome Extension powered by Google Gemini AI, intelligent one-click HTML Data Scraper to Excel & PDF, Text-to-Speech audio reader, and productivity developer tools.**
 
-[Features](#-key-features) • [Installation](#-getting-started) • [Architecture](#-project-architecture) • [Customization](#-customizing--extending) • [License](#-license)
+[Features](#-key-features) • [Installation](#-getting-started) • [AI Integration](#-gemini-ai-features) • [Data Scraper](#-data-scraper--export-engine) • [Architecture](#-project-architecture) • [License](#-license)
 
 </div>
 
@@ -18,27 +18,28 @@
 
 ## 🌟 Key Features
 
-* **⚡ Modern Glassmorphism Popup**:
-  * Multi-tab navigation (**Actions**, **Notes**, **Tab Info**).
-  * Highlighting page headings with smooth CSS pulse effects.
-  * Real-time link counter and dynamic badge updater on the extension icon.
-  * Clean URL copier that automatically strips tracking parameters (`utm_*`, `fbclid`, `gclid`).
-  * Distraction-free Focus / Reader mode filter toggle.
-  * Persistent quick notes synchronized via `chrome.storage.local`.
+### 🤖 1. Gemini AI Web Assistant
+* **⚡ 1-Click Page Summaries**: Instantly extract executive summaries, key takeaways, and action items from long articles or docs.
+* **💬 Interactive Q&A**: Ask any question about the current webpage directly in the popup.
+* **🎯 Model Selection**: Switch between **Gemini 1.5 Flash** and **Gemini 2.5 Flash**.
+* **🔊 Audio Readback**: Listen to AI responses with Text-to-Speech playback.
 
-* **⚙️ Full Options & Settings Page**:
-  * Customizable highlight accent colors with live color picker.
-  * Preferences synced across browser sessions via `chrome.storage.sync`.
-  * Diagnostic panel showing runtime state and Manifest V3 compatibility.
+### 📊 2. Smart Data Scraper & Exporter
+* **📑 Auto-Detection**: Instantly detects and counts HTML `<table>` elements, links, lists, and headings on any webpage.
+* **📗 Excel Export (.csv / .xls)**: One-click export with UTF-8 BOM encoding for native compatibility with Microsoft Excel, Apple Numbers, and Google Sheets.
+* **📕 Formatted PDF Export**: Opens a formatted, print-optimized document view with source metadata, timestamp, and clean zebra-striped tables.
+* **📦 JSON Export**: Raw structured data download for developers.
 
-* **🛠️ Background Service Worker**:
-  * Context menu integrations (*"Inspect with Nova"*, *"Copy Clean Link"*).
-  * Chrome lifecycle listeners (`onInstalled`, `onStartup`).
-  * Asynchronous message passing between tabs and background tasks.
+### 🛠️ 3. Built-In Productivity & Audio Tools
+* **🔊 Text-to-Speech (TTS) Reader**: Listen to any webpage with Play, Pause, Stop, and customizable playback speed controls (0.8x - 1.5x).
+* **🎨 Color Eyedropper**: Sample pixel-perfect HEX colors from any element on your screen with one click.
+* **✨ Heading Highlighter**: Visual outline and count for page hierarchy auditing.
+* **📖 Reader Focus Mode**: Distraction-free reading view.
+* **📋 Clean URL Copier**: Automatic removal of tracking parameters (`utm_*`, `fbclid`, `gclid`).
+* **📝 Synced Notes**: Quick markdown notes per domain saved to local browser storage.
 
-* **🎯 In-Page Floating Quick-Action Pill**:
-  * Injected discrete floating widget on webpages for instant one-click productivity.
-  * Built-in toast notification system.
+### 🎯 4. In-Page Floating Quick-Action Pill
+* Discrete floating action widget injected in the bottom-right corner of webpages for instant access to highlighters, focus mode, and table scraping without opening the toolbar popup.
 
 ---
 
@@ -46,23 +47,20 @@
 
 ```text
 nova-chrome-extension/
-├── manifest.json            # Manifest V3 configuration & permission grants
-├── icons/                   # High-res extension icons
-│   ├── icon16.png           # Toolbar & favicon size (16x16)
-│   ├── icon48.png           # Extension manager size (48x48)
-│   └── icon128.png          # Web Store & install size (128x128)
-├── popup/                   # Browser Toolbar Popup Interface
-│   ├── popup.html           # Multi-tab dashboard layout
-│   ├── popup.css            # Dark glassmorphism styles & micro-animations
-│   └── popup.js             # UI state, DOM communication, and storage logic
+├── manifest.json            # Manifest V3 configuration, permissions & commands
+├── icons/                   # High-res extension icons (16px, 48px, 128px)
+├── popup/                   # Browser Toolbar Interface
+│   ├── popup.html           # Multi-tab layout (AI, Scraper, Tools, Notes)
+│   ├── popup.css            # Dark glassmorphism styles & animations
+│   └── popup.js             # Gemini AI API calls, Scraper, Exporters & TTS
 ├── options/                 # Options & Configuration Page
 │   ├── options.html         # Settings UI
-│   ├── options.css          # Responsive sidebar & settings controls
-│   └── options.js           # Settings persistence via chrome.storage.sync
+│   ├── options.css          # Responsive settings panel
+│   └── options.js           # Gemini API key verification & storage sync
 ├── scripts/                 # Core Extension Scripts
-│   ├── background.js        # Service Worker (Context menus, badges, lifecycle)
-│   ├── content.js           # Content Script (Injected DOM tools & floating pill)
-│   └── content.css          # Injected stylesheet for webpage elements & toasts
+│   ├── background.js        # Service Worker (Context menus, shortcuts, lifecycle)
+│   ├── content.js           # Content Script (Scraper engine, PDF generator, floating pill)
+│   └── content.css          # Injected styles for highlights, pill, and toasts
 ├── .gitignore
 └── README.md
 ```
@@ -71,62 +69,26 @@ nova-chrome-extension/
 
 ## 🚀 Getting Started
 
-### 1. Clone the Repository
-```bash
-git clone https://github.com/Olied-Ahmed-chowdhury/nova-chrome-extension.git
-```
+### 1. Load the Extension in Google Chrome
+1. Open **Google Chrome** (or Edge, Brave, Opera).
+2. Go to `chrome://extensions`.
+3. Enable **Developer mode** (top-right toggle).
+4. Click **Load unpacked** (top-left button).
+5. Select the project folder: `c:\Users\olied\Desktop\nnn`.
+6. Click the **puzzle piece (🧩)** icon in your browser toolbar and pin **⚡ Nova**!
 
-### 2. Load the Extension in Google Chrome
-1. Open **Google Chrome** (or any Chromium browser like Brave, Edge, Opera).
-2. Navigate to:
-   ```text
-   chrome://extensions
-   ```
-3. In the top-right corner, toggle **Developer mode** to **ON**.
-4. In the top-left corner, click **Load unpacked**.
-5. Select the `nova-chrome-extension` directory.
-6. Click the **puzzle piece (🧩)** icon in your browser toolbar and pin **⚡ Nova Extension Starter** for quick access.
+### 2. Configure Gemini API (Optional)
+The extension comes pre-configured with a Gemini API key. You can also test or update your key anytime:
+* Right-click the Nova icon and select **Options** (or click ⚙️ in the popup).
+* Enter your Gemini API key and click **⚡ Test Key** to verify your connection!
 
 ---
 
-## 🛠️ Customizing & Extending
-
-### Adding New Permissions
-Open [`manifest.json`](manifest.json) and add any additional permissions needed:
-```json
-"permissions": [
-  "storage",
-  "activeTab",
-  "scripting",
-  "contextMenus",
-  "tabs"
-]
-```
-
-### Adding New Popup Actions
-1. Add your button in [`popup/popup.html`](popup/popup.html).
-2. Attach your event listener in [`popup/popup.js`](popup/popup.js) and send a message:
-```javascript
-chrome.tabs.sendMessage(activeTab.id, { action: 'YOUR_CUSTOM_ACTION' });
-```
-3. Handle the message inside [`scripts/content.js`](scripts/content.js):
-```javascript
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === 'YOUR_CUSTOM_ACTION') {
-    // Perform custom DOM manipulation or data extraction
-    sendResponse({ success: true });
-  }
-});
-```
-
----
-
-## 🤝 Contributing
-
-Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/Olied-Ahmed-chowdhury/nova-chrome-extension/issues).
+## ⌨️ Keyboard Shortcuts
+* `Ctrl + Shift + K` (Mac: `Cmd + Shift + K`) — Open Nova Popup
+* `Ctrl + Shift + S` (Mac: `Cmd + Shift + S`) — Quick Scrape Current Page
 
 ---
 
 ## 📄 License
-
 This project is licensed under the [MIT License](LICENSE).
