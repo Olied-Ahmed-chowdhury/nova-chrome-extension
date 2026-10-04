@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nova Extension</title>
+  <title>Nova AI Assistant & Data Scraper</title>
   <link rel="stylesheet" href="popup.css" />
 </head>
 <body>
@@ -14,57 +14,153 @@
         <div class="logo-icon">⚡</div>
         <div class="brand">
           <h1 class="brand-title">Nova</h1>
-          <span class="badge">v1.0.0</span>
+          <span class="badge">AI & Scraper v2.0</span>
         </div>
       </div>
-      <button id="openOptionsBtn" class="icon-button" title="Open Options">
-        ⚙️
-      </button>
+      <div class="header-actions">
+        <button id="ttsPlayBtn" class="icon-button" title="Read Page Aloud (TTS)">🔊</button>
+        <button id="openOptionsBtn" class="icon-button" title="Settings">⚙️</button>
+      </div>
     </header>
 
     <!-- Navigation Tabs -->
     <nav class="tab-nav">
-      <button class="tab-btn active" data-tab="tools">⚡ Actions</button>
+      <button class="tab-btn active" data-tab="ai">🤖 Gemini AI</button>
+      <button class="tab-btn" data-tab="scraper">📊 Scraper</button>
+      <button class="tab-btn" data-tab="tools">🛠️ Tools</button>
       <button class="tab-btn" data-tab="notes">📝 Notes</button>
-      <button class="tab-btn" data-tab="info">ℹ️ Tab Info</button>
     </nav>
 
-    <!-- Tab 1: Tools / Actions -->
-    <main id="tab-tools" class="tab-content active">
-      <div class="card">
-        <div class="card-header">
-          <span class="card-title">Quick Page Tools</span>
-          <span class="card-sub" id="activeDomain">Loading...</span>
+    <!-- TAB 1: GEMINI AI -->
+    <main id="tab-ai" class="tab-content active">
+      <div class="ai-controls card">
+        <div class="ai-prompt-header">
+          <span class="card-title">✨ Gemini AI Assistant</span>
+          <span class="model-badge" id="aiModelBadge">Gemini 1.5 Flash</span>
         </div>
-        <div class="action-grid">
-          <button id="highlightBtn" class="action-btn">
-            <span class="btn-icon">✨</span>
-            <span class="btn-label">Highlight Headings</span>
-          </button>
-          <button id="extractLinksBtn" class="action-btn">
-            <span class="btn-icon">🔗</span>
-            <span class="btn-label">Count Links</span>
-          </button>
-          <button id="copyUrlBtn" class="action-btn">
-            <span class="btn-icon">📋</span>
-            <span class="btn-label">Copy Clean URL</span>
-          </button>
-          <button id="readingModeBtn" class="action-btn">
-            <span class="btn-icon">📖</span>
-            <span class="btn-label">Toggle Focus Mode</span>
-          </button>
+        
+        <div class="quick-ai-actions">
+          <button id="aiSummarizeBtn" class="ai-pill-btn">⚡ Quick Summary</button>
+          <button id="aiKeyPointsBtn" class="ai-pill-btn">🎯 Key Insights</button>
+          <button id="aiActionItemsBtn" class="ai-pill-btn">📋 Action Items</button>
+        </div>
+
+        <div class="ai-input-group">
+          <input type="text" id="aiCustomQuery" placeholder="Ask anything about this page..." />
+          <button id="aiAskBtn" class="primary-btn-icon" title="Ask Gemini">➔</button>
         </div>
       </div>
 
-      <div class="status-box" id="statusMessage">
-        Ready to supercharge your workflow.
+      <!-- AI Response Container -->
+      <div class="ai-response-container card" id="aiResponseContainer">
+        <div class="response-header">
+          <span class="response-title">AI Output</span>
+          <div class="response-actions">
+            <button id="copyAiResponseBtn" class="mini-btn" title="Copy text">📋 Copy</button>
+            <button id="ttsAiResponseBtn" class="mini-btn" title="Speak response">🔊 Read</button>
+          </div>
+        </div>
+        <div class="response-body" id="aiResponseBody">
+          Click a quick action above or ask a question to analyze the active tab with Google Gemini.
+        </div>
       </div>
     </main>
 
-    <!-- Tab 2: Notes -->
+    <!-- TAB 2: DATA SCRAPER & EXPORTER -->
+    <section id="tab-scraper" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Data Scraper</span>
+          <span class="card-sub" id="scraperDetectedInfo">Scanning page...</span>
+        </div>
+
+        <div class="scraper-select-group">
+          <label for="scraperTarget">Target Content:</label>
+          <select id="scraperTarget" class="custom-select">
+            <option value="tables">📑 HTML Tables (<span id="countTables">0</span> found)</option>
+            <option value="links">🔗 Page Links & URLs (<span id="countLinks">0</span> found)</option>
+            <option value="lists">📋 Lists & Features (<span id="countLists">0</span> found)</option>
+            <option value="headings">📌 Headings Hierarchy (<span id="countHeadings">0</span> found)</option>
+          </select>
+        </div>
+
+        <button id="scrapeNowBtn" class="primary-btn" style="width: 100%; margin-top: 8px;">
+          ⚡ Extract Data
+        </button>
+      </div>
+
+      <!-- Scraper Preview & Export Bar -->
+      <div class="card scraper-results-card" id="scraperResultsCard" style="display: none;">
+        <div class="results-header">
+          <span id="resultsCountLabel">Extracted 0 rows</span>
+        </div>
+
+        <div class="table-preview-container" id="tablePreviewContainer"></div>
+
+        <!-- Export Buttons -->
+        <div class="export-actions">
+          <button id="exportExcelBtn" class="export-btn export-excel" title="Download Excel .xlsx/.csv">
+            <span class="btn-icon">📗</span> Excel (.csv)
+          </button>
+          <button id="exportPdfBtn" class="export-btn export-pdf" title="Export Formatted PDF">
+            <span class="btn-icon">📕</span> PDF Doc
+          </button>
+          <button id="exportJsonBtn" class="export-btn export-json" title="Download JSON format">
+            <span class="btn-icon">📦</span> JSON
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: TOOLS & UTILITIES -->
+    <section id="tab-tools" class="tab-content">
+      <!-- Text to Speech Card -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">🔊 Audio Reader (TTS)</span>
+          <span class="card-sub" id="ttsStatus">Ready</span>
+        </div>
+        <div class="tts-controls">
+          <button id="ttsPlayFullBtn" class="action-btn-compact">▶️ Play Page</button>
+          <button id="ttsPauseBtn" class="action-btn-compact">⏸️ Pause</button>
+          <button id="ttsStopBtn" class="action-btn-compact">⏹️ Stop</button>
+          <select id="ttsSpeedSelect" class="custom-select-mini">
+            <option value="0.8">0.8x</option>
+            <option value="1.0" selected>1.0x</option>
+            <option value="1.2">1.2x</option>
+            <option value="1.5">1.5x</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Quick Productivity Grid -->
+      <div class="card">
+        <div class="card-title" style="margin-bottom: 8px;">⚡ Productivity Tools</div>
+        <div class="action-grid">
+          <button id="eyeDropperBtn" class="action-btn">
+            <span class="btn-icon">🎨</span>
+            <span class="btn-label">Color Eyedropper</span>
+          </button>
+          <button id="highlightHeadingsBtn" class="action-btn">
+            <span class="btn-icon">✨</span>
+            <span class="btn-label">Highlight Headings</span>
+          </button>
+          <button id="toggleFocusBtn" class="action-btn">
+            <span class="btn-icon">📖</span>
+            <span class="btn-label">Reader Focus</span>
+          </button>
+          <button id="copyCleanUrlBtn" class="action-btn">
+            <span class="btn-icon">📋</span>
+            <span class="btn-label">Copy Clean URL</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: NOTES -->
     <section id="tab-notes" class="tab-content">
       <div class="notes-container">
-        <textarea id="pageNoteInput" placeholder="Write a quick note for this page..."></textarea>
+        <textarea id="pageNoteInput" placeholder="Write a note for this webpage..."></textarea>
         <div class="note-actions">
           <button id="saveNoteBtn" class="primary-btn">Save Note</button>
           <button id="clearNoteBtn" class="secondary-btn">Clear</button>
@@ -73,28 +169,10 @@
       <div id="savedNotesList" class="saved-notes-list"></div>
     </section>
 
-    <!-- Tab 3: Tab Info -->
-    <section id="tab-info" class="tab-content">
-      <div class="info-card">
-        <div class="info-row">
-          <span class="info-label">Title:</span>
-          <span class="info-value" id="infoTitle">-</span>
-        </div>
-        <div class="info-row">
-          <span class="info-label">URL:</span>
-          <span class="info-value text-truncate" id="infoUrl">-</span>
-        </div>
-        <div class="info-row">
-          <span class="info-label">Status:</span>
-          <span class="info-value" id="infoStatus">-</span>
-        </div>
-      </div>
-    </section>
-
     <!-- Footer -->
     <footer class="footer">
-      <span>Powered by Manifest V3</span>
-      <span class="badge-dot">● Active</span>
+      <span id="activeDomainLabel">Chrome Page</span>
+      <span class="badge-dot" id="statusIndicator">● Ready</span>
     </footer>
   </div>
 

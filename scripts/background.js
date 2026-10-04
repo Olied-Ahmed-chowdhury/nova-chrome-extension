@@ -1,79 +1,55 @@
-// background.js - Service Worker (Manifest V3)
+// background.js - Nova v2.0 Background Service Worker
 
 chrome.runtime.onInstalled.addListener((details) => {
-  console.log('[Nova Extension] Installed/Updated:', details.reason);
+  console.log('[Nova] Extension installed/updated:', details.reason);
 
-  // 1. Initialize Default Settings
-  chrome.storage.sync.get(['floatingButton', 'autoCleanUrls', 'highlightColor', 'badgeNotification'], (res) => {
-    if (res.floatingButton === undefined) {
+  // Set default settings
+  chrome.storage.sync.get(['geminiApiKey', 'geminiModel', 'floatingButton'], (res) => {
+    if (!res.geminiApiKey) {
       chrome.storage.sync.set({
+        geminiApiKey: '',
+        geminiModel: 'gemini-1.5-flash',
         floatingButton: true,
-        autoCleanUrls: true,
-        highlightColor: '#6366f1',
-        badgeNotification: true
+        autoDetectTables: true,
+        includeMetadataRow: true
       });
     }
   });
 
-  // 2. Register Context Menus
+  // Register Context Menus
   chrome.contextMenus.create({
-    id: 'nova-inspect-selection',
-    title: '⚡ Inspect with Nova: "%s"',
+    id: 'nova-summarize-selection',
+    title: '🤖 Summarize selection with Gemini',
     contexts: ['selection']
   });
 
   chrome.contextMenus.create({
-    id: 'nova-clean-url',
-    title: '🔗 Copy Clean Link',
-    contexts: ['link']
+    id: 'nova-scrape-page',
+    title: '📊 Scrape Page Data (Excel/PDF)',
+    contexts: ['page']
   });
 });
 
-// Handle Context Menu Actions
+// Context Menu Click Handler
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
-  if (info.menuItemId === 'nova-inspect-selection' && tab?.id) {
+  if (!tab?.id) return;
+
+  if (info.menuItemId === 'nova-summarize-selection') {
     chrome.tabs.sendMessage(tab.id, {
       action: 'NOTIFY_POPUP',
-      text: `Selected text: "${info.selectionText}"`
+      text: `Selected: "${info.selectionText}" (Open Nova to analyze with Gemini)`
     });
-  } else if (info.menuItemId === 'nova-clean-url' && tab?.id) {
-    try {
-      const url = new URL(info.linkUrl);
-      const trackingParams = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'fbclid', 'gclid'];
-      trackingParams.forEach(p => url.searchParams.delete(p));
-      chrome.tabs.sendMessage(tab.id, {
-        action: 'NOTIFY_POPUP',
-        text: `Clean Link: ${url.toString()}`
-      });
-    } catch (e) {
-      console.error('Error cleaning URL:', e);
-    }
+  } else if (info.menuItemId === 'nova-scrape-page') {
+    chrome.tabs.sendMessage(tab.id, { action: 'TRIGGER_QUICK_SCRAPE' });
   }
 });
 
-// Listen for messages from content scripts or popup
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.action === 'GET_EXTENSION_INFO') {
-    const manifest = chrome.runtime.getManifest();
-    sendResponse({
-      version: manifest.version,
-      name: manifest.name
-    });
-    return true;
-  }
+// Keyboard Commands Handler
+chrome.commands.onCommand.addListener(async (command) => {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  if (!tab?.id) return;
 
-  if (message.action === 'SET_BADGE') {
-    if (sender.tab?.id) {
-      chrome.action.setBadgeText({
-        tabId: sender.tab.id,
-        text: message.text || ''
-      });
-      chrome.action.setBadgeBackgroundColor({
-        tabId: sender.tab.id,
-        color: '#6366f1'
-      });
-    }
-    sendResponse({ success: true });
-    return true;
+  if (command === 'quick_scrape') {
+    chrome.tabs.sendMessage(tab.id, { action: 'TRIGGER_QUICK_SCRAPE' });
   }
 });
