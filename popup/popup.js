@@ -1,10 +1,11 @@
-// popup.js - Nova v2.0 AI Assistant & Data Scraper
+// popup.js - Nova AI Assistant (Groq Powered) & Data Scraper
 
-const DEFAULT_GEMINI_KEY = '';
+const DEFAULT_API_KEY = '';
+const DEFAULT_MODEL = 'openai/gpt-oss-120b';
 
 
 document.addEventListener('DOMContentLoaded', async () => {
-  // Elements
+  // Navigation
   const tabButtons = document.querySelectorAll('.tab-btn');
   const tabContents = document.querySelectorAll('.tab-content');
   const openOptionsBtn = document.getElementById('openOptionsBtn');
@@ -20,6 +21,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const aiResponseBody = document.getElementById('aiResponseBody');
   const copyAiResponseBtn = document.getElementById('copyAiResponseBtn');
   const ttsAiResponseBtn = document.getElementById('ttsAiResponseBtn');
+  const aiModelBadge = document.getElementById('aiModelBadge');
 
   // Scraper Elements
   const scraperDetectedInfo = document.getElementById('scraperDetectedInfo');
@@ -32,8 +34,17 @@ document.addEventListener('DOMContentLoaded', async () => {
   const exportPdfBtn = document.getElementById('exportPdfBtn');
   const exportJsonBtn = document.getElementById('exportJsonBtn');
 
-  // Tools Elements
-  const ttsPlayBtn = document.getElementById('ttsPlayBtn');
+  // Screenshot & Capture Elements
+  const quickScreenshotHeaderBtn = document.getElementById('quickScreenshotHeaderBtn');
+  const captureTabBtn = document.getElementById('captureTabBtn');
+  const screenshotPreviewContainer = document.getElementById('screenshotPreviewContainer');
+  const screenshotPreviewImg = document.getElementById('screenshotPreviewImg');
+  const downloadCapturedImgBtn = document.getElementById('downloadCapturedImgBtn');
+  const copyCapturedImgBtn = document.getElementById('copyCapturedImgBtn');
+  const screenshotStatus = document.getElementById('screenshotStatus');
+
+  // TTS & Tools
+  const ttsPlayHeaderBtn = document.getElementById('ttsPlayHeaderBtn');
   const ttsPlayFullBtn = document.getElementById('ttsPlayFullBtn');
   const ttsPauseBtn = document.getElementById('ttsPauseBtn');
   const ttsStopBtn = document.getElementById('ttsStopBtn');
@@ -44,7 +55,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const toggleFocusBtn = document.getElementById('toggleFocusBtn');
   const copyCleanUrlBtn = document.getElementById('copyCleanUrlBtn');
 
-  // Notes Elements
+  // Notes
   const pageNoteInput = document.getElementById('pageNoteInput');
   const saveNoteBtn = document.getElementById('saveNoteBtn');
   const clearNoteBtn = document.getElementById('clearNoteBtn');
@@ -52,6 +63,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   let currentScrapedData = null;
   let activeTab = null;
+  let lastCapturedDataUrl = null;
 
   // 1. Tab Switching
   tabButtons.forEach(btn => {
@@ -73,7 +85,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
-  // 3. Initialize Active Tab
+  // 3. Active Tab Info
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   activeTab = tab;
 
@@ -84,9 +96,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     } catch {
       activeDomainLabel.textContent = 'Chrome Tab';
     }
-    // Scan page elements for scraper preview count
     scanPageStats();
   }
+
+  // Load configured model badge
+  chrome.storage.sync.get(['groqModel'], (res) => {
+    if (res.groqModel) {
+      aiModelBadge.textContent = res.groqModel.split('/').pop();
+    }
+  });
 
   // Helper: Send message to content script
   async function sendTabMessage(action, payload = {}) {
@@ -110,54 +128,64 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   // -------------------------------------------------------------
-  // 4. GEMINI AI INTEGRATION
+  // 4. GROQ / GROK AI INTEGRATION
   // -------------------------------------------------------------
-  async function getGeminiApiKey() {
-    const res = await chrome.storage.sync.get(['geminiApiKey']);
-    return res.geminiApiKey && res.geminiApiKey.trim() !== '' ? res.geminiApiKey.trim() : DEFAULT_GEMINI_KEY;
+  async function getAiConfig() {
+    const res = await chrome.storage.sync.get(['groqApiKey', 'groqModel']);
+    const apiKey = res.groqApiKey && res.groqApiKey.trim() !== '' ? res.groqApiKey.trim() : DEFAULT_API_KEY;
+    const model = res.groqModel || DEFAULT_MODEL;
+    return { apiKey, model };
   }
 
-  async function callGemini(promptText, pageContext = '') {
-    const apiKey = await getGeminiApiKey();
-    aiResponseBody.innerHTML = '<span style="color: #38bdf8;">⚡ Gemini is analyzing the page content...</span>';
+  async function callGroqAi(promptText, pageContext = '') {
+    const { apiKey, model } = await getAiConfig();
+    aiResponseBody.innerHTML = '<span style="color: #38bdf8;">✦ Analyzing page content with Groq AI...</span>';
 
-    const fullPrompt = `You are Nova, an AI assistant analyzing a webpage.
-Webpage URL: ${activeTab?.url || 'Unknown'}
-Webpage Title: ${activeTab?.title || 'Unknown'}
+    const systemPrompt = `You are Nova AI, an advanced, highly capable web assistant. Analyze the user's webpage context and provide structured, precise, bullet-pointed insights. Avoid fluff.`;
+    
+    const userMessage = `Webpage Title: ${activeTab?.title || 'Unknown'}
+URL: ${activeTab?.url || 'Unknown'}
 
-Context from page:
+Webpage Content:
 """
-${pageContext.substring(0, 15000)}
+${pageContext.substring(0, 12000)}
 """
 
 User Request:
-${promptText}
+${promptText}`;
 
-Please provide a clear, well-structured, formatted response:`;
-
-    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    const endpoint = 'https://api.groq.com/openai/v1/chat/completions';
 
     try {
       const response = await fetch(endpoint, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Authorization': `Bearer ${apiKey}`,
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify({
-          contents: [{ parts: [{ text: fullPrompt }] }]
+          model: model,
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: userMessage }
+          ],
+          temperature: 0.3,
+          max_tokens: 1024
         })
       });
 
       const data = await response.json();
 
       if (data.error) {
-        aiResponseBody.innerHTML = `<span style="color: #f87171;">Error from Gemini: ${escapeHtml(data.error.message)}</span>`;
+        aiResponseBody.innerHTML = `<span style="color: #f87171;">AI Error: ${escapeHtml(data.error.message || JSON.stringify(data.error))}</span>`;
         return;
       }
 
-      const generatedText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (generatedText) {
-        aiResponseBody.textContent = generatedText;
+      const generatedText = data.choices?.[0]?.message?.content;
+      if (generatedText && generatedText.trim() !== '') {
+        aiResponseBody.textContent = generatedText.trim();
       } else {
-        aiResponseBody.textContent = 'No response generated. Please try again.';
+        aiResponseBody.textContent = 'No response received. Please try again.';
       }
     } catch (err) {
       aiResponseBody.innerHTML = `<span style="color: #f87171;">Connection error: ${escapeHtml(err.message)}</span>`;
@@ -167,19 +195,19 @@ Please provide a clear, well-structured, formatted response:`;
   async function triggerAiWithPageText(promptText) {
     const res = await sendTabMessage('GET_PAGE_TEXT');
     const pageText = res?.text || '';
-    await callGemini(promptText, pageText);
+    await callGroqAi(promptText, pageText);
   }
 
   aiSummarizeBtn.addEventListener('click', () => {
-    triggerAiWithPageText('Provide a concise 3-5 bullet point executive summary of the main points of this page.');
+    triggerAiWithPageText('Provide a concise 3-5 bullet point executive summary of this webpage.');
   });
 
   aiKeyPointsBtn.addEventListener('click', () => {
-    triggerAiWithPageText('Extract the top 5 key insights, data points, or takeaways from this page.');
+    triggerAiWithPageText('Extract the top 5 key takeaways, data metrics, or main facts from this page.');
   });
 
   aiActionItemsBtn.addEventListener('click', () => {
-    triggerAiWithPageText('List any actionable recommendations, steps, or important to-dos mentioned in this content.');
+    triggerAiWithPageText('List all actionable takeaways, recommended steps, or important to-dos from this content.');
   });
 
   aiAskBtn.addEventListener('click', () => {
@@ -203,7 +231,67 @@ Please provide a clear, well-structured, formatted response:`;
   });
 
   // -------------------------------------------------------------
-  // 5. DATA SCRAPER & EXPORTER (EXCEL, PDF, JSON)
+  // 5. FULL-TAB SCREENSHOT ENGINE
+  // -------------------------------------------------------------
+  async function captureTabScreenshot() {
+    try {
+      screenshotStatus.textContent = 'Capturing...';
+      const dataUrl = await chrome.tabs.captureVisibleTab(null, { format: 'png' });
+      if (!dataUrl) {
+        screenshotStatus.textContent = 'Failed to capture';
+        return;
+      }
+      lastCapturedDataUrl = dataUrl;
+      screenshotPreviewImg.src = dataUrl;
+      screenshotPreviewContainer.style.display = 'flex';
+      screenshotStatus.textContent = 'Captured!';
+
+      // Trigger automatic download
+      const filename = `nova_screenshot_${getTimestamp()}.png`;
+      const a = document.createElement('a');
+      a.href = dataUrl;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    } catch (err) {
+      console.error('Screenshot capture error:', err);
+      screenshotStatus.textContent = 'Capture error';
+      alert('Could not capture screenshot on this tab: ' + err.message);
+    }
+  }
+
+  captureTabBtn.addEventListener('click', captureTabScreenshot);
+  quickScreenshotHeaderBtn.addEventListener('click', captureTabScreenshot);
+
+  downloadCapturedImgBtn.addEventListener('click', () => {
+    if (!lastCapturedDataUrl) return;
+    const filename = `nova_screenshot_${getTimestamp()}.png`;
+    const a = document.createElement('a');
+    a.href = lastCapturedDataUrl;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  });
+
+  copyCapturedImgBtn.addEventListener('click', async () => {
+    if (!lastCapturedDataUrl) return;
+    try {
+      const res = await fetch(lastCapturedDataUrl);
+      const blob = await res.blob();
+      await navigator.clipboard.write([
+        new ClipboardItem({ 'image/png': blob })
+      ]);
+      copyCapturedImgBtn.textContent = '✅ Copied!';
+      setTimeout(() => { copyCapturedImgBtn.textContent = '📋 Copy Image'; }, 2000);
+    } catch (e) {
+      alert('Failed to copy image to clipboard: ' + e.message);
+    }
+  });
+
+  // -------------------------------------------------------------
+  // 6. DATA SCRAPER & EXPORTERS
   // -------------------------------------------------------------
   async function scanPageStats() {
     const stats = await sendTabMessage('GET_PAGE_STATS');
@@ -212,7 +300,7 @@ Please provide a clear, well-structured, formatted response:`;
       document.getElementById('countLinks').textContent = stats.links || 0;
       document.getElementById('countLists').textContent = stats.lists || 0;
       document.getElementById('countHeadings').textContent = stats.headings || 0;
-      scraperDetectedInfo.textContent = `Found ${stats.tables} tables, ${stats.links} links, ${stats.lists} lists.`;
+      scraperDetectedInfo.textContent = `${stats.tables} tables, ${stats.links} links detected.`;
     } else {
       scraperDetectedInfo.textContent = 'Ready to extract.';
     }
@@ -255,7 +343,7 @@ Please provide a clear, well-structured, formatted response:`;
     thead.appendChild(trHead);
     table.appendChild(thead);
 
-    // Body Rows (Preview first 20)
+    // Body Rows
     const tbody = document.createElement('tbody');
     data.slice(0, 20).forEach(row => {
       const tr = document.createElement('tr');
@@ -276,7 +364,7 @@ Please provide a clear, well-structured, formatted response:`;
     if (!currentScrapedData || currentScrapedData.length === 0) return;
     const headers = Object.keys(currentScrapedData[0]);
 
-    let csvContent = '\uFEFF'; // UTF-8 BOM for Excel native compatibility
+    let csvContent = '\uFEFF';
     csvContent += headers.map(h => `"${h.replace(/"/g, '""')}"`).join(',') + '\r\n';
 
     currentScrapedData.forEach(row => {
@@ -288,7 +376,7 @@ Please provide a clear, well-structured, formatted response:`;
     });
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    downloadBlob(blob, `scraped_data_${getTimestamp()}.csv`);
+    downloadBlob(blob, `nova_data_${getTimestamp()}.csv`);
   });
 
   // Export to Formatted PDF
@@ -306,7 +394,7 @@ Please provide a clear, well-structured, formatted response:`;
     if (!currentScrapedData) return;
     const jsonStr = JSON.stringify(currentScrapedData, null, 2);
     const blob = new Blob([jsonStr], { type: 'application/json' });
-    downloadBlob(blob, `scraped_data_${getTimestamp()}.json`);
+    downloadBlob(blob, `nova_data_${getTimestamp()}.json`);
   });
 
   function downloadBlob(blob, filename) {
@@ -325,7 +413,7 @@ Please provide a clear, well-structured, formatted response:`;
   }
 
   // -------------------------------------------------------------
-  // 6. TEXT-TO-SPEECH (TTS)
+  // 7. TEXT-TO-SPEECH (TTS)
   // -------------------------------------------------------------
   function speakText(text) {
     if (!('speechSynthesis' in window)) {
@@ -343,7 +431,7 @@ Please provide a clear, well-structured, formatted response:`;
     window.speechSynthesis.speak(utterance);
   }
 
-  ttsPlayBtn.addEventListener('click', async () => {
+  ttsPlayHeaderBtn.addEventListener('click', async () => {
     const res = await sendTabMessage('GET_PAGE_TEXT');
     if (res?.text) speakText(res.text);
   });
@@ -371,7 +459,7 @@ Please provide a clear, well-structured, formatted response:`;
   });
 
   // -------------------------------------------------------------
-  // 7. PRODUCTIVITY & TOOLS
+  // 8. PRODUCTIVITY TOOLS
   // -------------------------------------------------------------
   eyeDropperBtn.addEventListener('click', async () => {
     if ('EyeDropper' in window) {
@@ -383,10 +471,10 @@ Please provide a clear, well-structured, formatted response:`;
           alert(`🎨 Color ${result.sRGBHex} copied to clipboard!`);
         }
       } catch (e) {
-        console.log('Eyedropper cancelled');
+        console.log('Eyedropper closed');
       }
     } else {
-      alert('EyeDropper API is available in Chromium browsers.');
+      alert('EyeDropper API is available in Chrome.');
     }
   });
 
@@ -405,14 +493,14 @@ Please provide a clear, well-structured, formatted response:`;
       const tracking = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'fbclid', 'gclid'];
       tracking.forEach(p => urlObj.searchParams.delete(p));
       await navigator.clipboard.writeText(urlObj.toString());
-      alert('📋 Clean URL copied to clipboard!');
+      alert('🔗 Clean URL copied to clipboard!');
     } catch {
       await navigator.clipboard.writeText(activeTab.url);
     }
   });
 
   // -------------------------------------------------------------
-  // 8. NOTES STORAGE
+  // 9. NOTES STORAGE
   // -------------------------------------------------------------
   async function loadNotes() {
     const res = await chrome.storage.local.get(['pageNotes']);

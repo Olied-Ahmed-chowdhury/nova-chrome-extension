@@ -1,12 +1,12 @@
-/* content.css - Styles injected by Nova Extension */
+/* content.css - Nova Star Injected Styles */
 
 /* 1. Heading Highlights */
 .nova-heading-highlight {
-  outline: 2px dashed #6366f1 !important;
-  background-color: rgba(99, 102, 241, 0.12) !important;
+  outline: 2px dashed #0ea5e9 !important;
+  background-color: rgba(14, 165, 233, 0.12) !important;
   border-radius: 4px !important;
   transition: outline 0.2s ease, background-color 0.2s ease !important;
-  position: relative;
+  position: relative !important;
 }
 
 /* 2. Focus Mode Filter */
@@ -14,7 +14,7 @@ body.nova-focus-mode-active {
   filter: contrast(105%) brightness(95%) !important;
   max-width: 900px !important;
   margin: 0 auto !important;
-  box-shadow: 0 0 100px rgba(0, 0, 0, 0.3) !important;
+  box-shadow: 0 0 100px rgba(0, 0, 0, 0.4) !important;
   transition: all 0.3s ease !important;
 }
 
@@ -33,7 +33,7 @@ body.nova-focus-mode-active {
 .nova-pill-trigger {
   width: 44px !important;
   height: 44px !important;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 50%, #f59e0b 100%) !important;
   color: #fff !important;
   border-radius: 50% !important;
   display: flex !important;
@@ -41,21 +41,21 @@ body.nova-focus-mode-active {
   justify-content: center !important;
   font-size: 20px !important;
   cursor: pointer !important;
-  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.4) !important;
+  box-shadow: 0 4px 16px rgba(14, 165, 233, 0.45) !important;
   transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s !important;
   user-select: none !important;
 }
 
 .nova-pill-trigger:hover {
   transform: scale(1.08) !important;
-  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6) !important;
+  box-shadow: 0 6px 22px rgba(14, 165, 233, 0.65) !important;
 }
 
 .nova-pill-menu {
   display: none !important;
-  background: rgba(15, 23, 42, 0.9) !important;
+  background: rgba(9, 14, 28, 0.92) !important;
   backdrop-filter: blur(12px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(56, 189, 248, 0.2) !important;
   border-radius: 30px !important;
   padding: 4px 8px !important;
   gap: 6px !important;
@@ -80,7 +80,8 @@ body.nova-focus-mode-active {
 }
 
 .nova-pill-btn:hover {
-  background: rgba(99, 102, 241, 0.3) !important;
+  background: rgba(14, 165, 233, 0.25) !important;
+  color: #38bdf8 !important;
 }
 
 @keyframes novaSlideIn {
@@ -94,14 +95,14 @@ body.nova-focus-mode-active {
   top: 24px !important;
   right: 24px !important;
   z-index: 2147483647 !important;
-  background: #0f172a !important;
+  background: #090e1c !important;
   color: #f8fafc !important;
   padding: 10px 18px !important;
   border-radius: 8px !important;
-  border: 1px solid rgba(99, 102, 241, 0.4) !important;
+  border: 1px solid rgba(14, 165, 233, 0.4) !important;
   font-size: 13px !important;
   font-weight: 500 !important;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3) !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4) !important;
   opacity: 0 !important;
   pointer-events: none !important;
   transform: translateY(-8px) !important;

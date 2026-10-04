@@ -1,6 +1,7 @@
-// options.js - Settings & Gemini Configuration
+// options.js - Settings & Groq AI Configuration
 
-const DEFAULT_GEMINI_KEY = '';
+const DEFAULT_API_KEY = '';
+const DEFAULT_MODEL = 'openai/gpt-oss-120b';
 
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -8,11 +9,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   const sections = document.querySelectorAll('.settings-section');
 
   // Elements
-  const geminiApiKeyInput = document.getElementById('geminiApiKeyInput');
+  const groqApiKeyInput = document.getElementById('groqApiKeyInput');
   const toggleApiKeyVisibility = document.getElementById('toggleApiKeyVisibility');
   const testAiConnectionBtn = document.getElementById('testAiConnectionBtn');
   const apiTestStatus = document.getElementById('apiTestStatus');
-  const geminiModelSelect = document.getElementById('geminiModelSelect');
+  const groqModelSelect = document.getElementById('groqModelSelect');
 
   const autoDetectTables = document.getElementById('autoDetectTables');
   const includeMetadataRow = document.getElementById('includeMetadataRow');
@@ -34,37 +35,37 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   const DEFAULT_SETTINGS = {
-    geminiApiKey: DEFAULT_GEMINI_KEY,
-    geminiModel: 'gemini-1.5-flash',
+    groqApiKey: DEFAULT_API_KEY,
+    groqModel: DEFAULT_MODEL,
     autoDetectTables: true,
     includeMetadataRow: true,
     floatingButton: true,
-    highlightColor: '#6366f1'
+    highlightColor: '#0ea5e9'
   };
 
   // 2. Load Settings
   async function loadSettings() {
     const data = await chrome.storage.sync.get(DEFAULT_SETTINGS);
-    geminiApiKeyInput.value = data.geminiApiKey || DEFAULT_GEMINI_KEY;
-    geminiModelSelect.value = data.geminiModel || 'gemini-1.5-flash';
+    groqApiKeyInput.value = data.groqApiKey || DEFAULT_API_KEY;
+    groqModelSelect.value = data.groqModel || DEFAULT_MODEL;
     autoDetectTables.checked = data.autoDetectTables !== false;
     includeMetadataRow.checked = data.includeMetadataRow !== false;
     floatingButtonToggle.checked = data.floatingButton !== false;
-    highlightColor.value = data.highlightColor || '#6366f1';
+    highlightColor.value = data.highlightColor || '#0ea5e9';
   }
 
   // 3. Save Settings
   async function saveSettings() {
     const updated = {
-      geminiApiKey: geminiApiKeyInput.value.trim(),
-      geminiModel: geminiModelSelect.value,
+      groqApiKey: groqApiKeyInput.value.trim(),
+      groqModel: groqModelSelect.value,
       autoDetectTables: autoDetectTables.checked,
       includeMetadataRow: includeMetadataRow.checked,
       floatingButton: floatingButtonToggle.checked,
       highlightColor: highlightColor.value
     };
     await chrome.storage.sync.set(updated);
-    saveStatus.textContent = '✨ Settings saved!';
+    saveStatus.textContent = '✦ Settings saved!';
     saveStatus.style.color = '#38bdf8';
     setTimeout(() => {
       saveStatus.textContent = 'All changes saved automatically.';
@@ -72,43 +73,46 @@ document.addEventListener('DOMContentLoaded', async () => {
     }, 2000);
   }
 
-  geminiApiKeyInput.addEventListener('input', saveSettings);
-  geminiModelSelect.addEventListener('change', saveSettings);
+  groqApiKeyInput.addEventListener('input', saveSettings);
+  groqModelSelect.addEventListener('change', saveSettings);
   autoDetectTables.addEventListener('change', saveSettings);
   includeMetadataRow.addEventListener('change', saveSettings);
   floatingButtonToggle.addEventListener('change', saveSettings);
   highlightColor.addEventListener('input', saveSettings);
 
-  // 4. Toggle API Key Visibility
+  // 4. Toggle Visibility
   toggleApiKeyVisibility.addEventListener('click', () => {
-    if (geminiApiKeyInput.type === 'password') {
-      geminiApiKeyInput.type = 'text';
+    if (groqApiKeyInput.type === 'password') {
+      groqApiKeyInput.type = 'text';
       toggleApiKeyVisibility.textContent = '🙈 Hide';
     } else {
-      geminiApiKeyInput.type = 'password';
-      toggleApiKeyVisibility.textContent = '👁️ Show';
+      groqApiKeyInput.type = 'password';
+      toggleApiKeyVisibility.textContent = '👁 Show';
     }
   });
 
-  // 5. Test Gemini API Key Connection
+  // 5. Test Groq AI Key Connection
   testAiConnectionBtn.addEventListener('click', async () => {
-    const key = geminiApiKeyInput.value.trim();
-    if (!key) {
-      apiTestStatus.textContent = '❌ Please enter an API key first.';
-      apiTestStatus.style.color = '#f87171';
-      return;
-    }
+    const key = groqApiKeyInput.value.trim() || DEFAULT_API_KEY;
+    const model = groqModelSelect.value || DEFAULT_MODEL;
 
-    apiTestStatus.textContent = '⏳ Testing connection to Gemini API...';
+    apiTestStatus.textContent = '⏳ Verifying connection with Groq AI...';
     apiTestStatus.style.color = '#38bdf8';
 
-    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`;
+    const endpoint = 'https://api.groq.com/openai/v1/chat/completions';
     try {
       const resp = await fetch(endpoint, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Authorization': `Bearer ${key}`,
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify({
-          contents: [{ parts: [{ text: 'Hello! Respond with: Gemini is ready' }] }]
+          model: model,
+          messages: [
+            { role: 'user', content: 'Say: Nova AI is online!' }
+          ],
+          max_tokens: 30
         })
       });
 
@@ -116,11 +120,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (resData.error) {
         apiTestStatus.textContent = `❌ API Error: ${resData.error.message}`;
         apiTestStatus.style.color = '#f87171';
-      } else if (resData.candidates?.[0]?.content?.parts?.[0]?.text) {
-        apiTestStatus.textContent = `✅ Success! Gemini Connected (${resData.candidates[0].content.parts[0].text.trim()})`;
+      } else if (resData.choices?.[0]?.message?.content) {
+        apiTestStatus.textContent = `✅ Success! AI Connected (${resData.choices[0].message.content.trim()})`;
         apiTestStatus.style.color = '#10b981';
       } else {
-        apiTestStatus.textContent = '⚠️ Unexpected response format from Gemini.';
+        apiTestStatus.textContent = '⚠️ Unexpected response format from AI.';
         apiTestStatus.style.color = '#f59e0b';
       }
     } catch (err) {

@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Nova - AI Web Assistant & Data Scraper",
-  "version": "2.0.0",
-  "description": "Supercharge your browsing with Gemini AI summaries, one-click Table & Data Scraper to Excel/PDF, Text-to-Speech, and productivity tools.",
+  "name": "Nova - AI Assistant & Web Scraper",
+  "version": "2.1.0",
+  "description": "Ultra-fast AI page analysis, HTML table scraper to Excel & PDF, high-res screenshots, Text-to-Speech, and productivity tools.",
   "permissions": [
     "storage",
     "activeTab",
@@ -12,7 +12,8 @@
     "downloads"
   ],
   "host_permissions": [
-    "https://generativelanguage.googleapis.com/*",
+    "https://api.groq.com/*",
+    "https://api.x.ai/*",
     "<all_urls>"
   ],
   "action": {
@@ -22,7 +23,7 @@
       "48": "icons/icon48.png",
       "128": "icons/icon128.png"
     },
-    "default_title": "Nova AI Assistant & Data Scraper"
+    "default_title": "Nova AI Assistant"
   },
   "options_page": "options/options.html",
   "background": {
@@ -42,6 +43,13 @@
         "mac": "Command+Shift+K"
       },
       "description": "Open Nova Assistant"
+    },
+    "take_screenshot": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+X",
+        "mac": "Command+Shift+X"
+      },
+      "description": "Capture Tab Screenshot"
     },
     "quick_scrape": {
       "suggested_key": {

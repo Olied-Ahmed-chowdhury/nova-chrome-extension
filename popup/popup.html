@@ -11,76 +11,77 @@
     <!-- Header -->
     <header class="header">
       <div class="logo-group">
-        <div class="logo-icon">⚡</div>
+        <div class="logo-icon">✦</div>
         <div class="brand">
-          <h1 class="brand-title">Nova</h1>
-          <span class="badge">AI & Scraper v2.0</span>
+          <h1 class="brand-title">NOVA</h1>
+          <span class="badge">AI & Scraper</span>
         </div>
       </div>
       <div class="header-actions">
-        <button id="ttsPlayBtn" class="icon-button" title="Read Page Aloud (TTS)">🔊</button>
+        <button id="quickScreenshotHeaderBtn" class="icon-button" title="Capture Screenshot (PNG)">📸</button>
+        <button id="ttsPlayHeaderBtn" class="icon-button" title="Read Page (TTS)">🔊</button>
         <button id="openOptionsBtn" class="icon-button" title="Settings">⚙️</button>
       </div>
     </header>
 
     <!-- Navigation Tabs -->
     <nav class="tab-nav">
-      <button class="tab-btn active" data-tab="ai">🤖 Gemini AI</button>
+      <button class="tab-btn active" data-tab="ai">✦ AI Assistant</button>
       <button class="tab-btn" data-tab="scraper">📊 Scraper</button>
-      <button class="tab-btn" data-tab="tools">🛠️ Tools</button>
+      <button class="tab-btn" data-tab="capture">📸 Capture & Tools</button>
       <button class="tab-btn" data-tab="notes">📝 Notes</button>
     </nav>
 
-    <!-- TAB 1: GEMINI AI -->
+    <!-- TAB 1: AI ASSISTANT -->
     <main id="tab-ai" class="tab-content active">
       <div class="ai-controls card">
         <div class="ai-prompt-header">
-          <span class="card-title">✨ Gemini AI Assistant</span>
-          <span class="model-badge" id="aiModelBadge">Gemini 1.5 Flash</span>
+          <span class="card-title">✦ Page Intelligence</span>
+          <span class="model-badge" id="aiModelBadge">Groq LLaMA / GPT-OSS</span>
         </div>
         
         <div class="quick-ai-actions">
-          <button id="aiSummarizeBtn" class="ai-pill-btn">⚡ Quick Summary</button>
-          <button id="aiKeyPointsBtn" class="ai-pill-btn">🎯 Key Insights</button>
-          <button id="aiActionItemsBtn" class="ai-pill-btn">📋 Action Items</button>
+          <button id="aiSummarizeBtn" class="ai-pill-btn">⚡ Summarize</button>
+          <button id="aiKeyPointsBtn" class="ai-pill-btn">🎯 Key Takeaways</button>
+          <button id="aiActionItemsBtn" class="ai-pill-btn">📋 Action Steps</button>
         </div>
 
         <div class="ai-input-group">
           <input type="text" id="aiCustomQuery" placeholder="Ask anything about this page..." />
-          <button id="aiAskBtn" class="primary-btn-icon" title="Ask Gemini">➔</button>
+          <button id="aiAskBtn" class="primary-btn-icon" title="Ask AI">➔</button>
         </div>
       </div>
 
       <!-- AI Response Container -->
       <div class="ai-response-container card" id="aiResponseContainer">
         <div class="response-header">
-          <span class="response-title">AI Output</span>
+          <span class="response-title">AI Analysis</span>
           <div class="response-actions">
             <button id="copyAiResponseBtn" class="mini-btn" title="Copy text">📋 Copy</button>
-            <button id="ttsAiResponseBtn" class="mini-btn" title="Speak response">🔊 Read</button>
+            <button id="ttsAiResponseBtn" class="mini-btn" title="Speak text">🔊 Speak</button>
           </div>
         </div>
         <div class="response-body" id="aiResponseBody">
-          Click a quick action above or ask a question to analyze the active tab with Google Gemini.
+          Select a quick analysis tool above or ask a custom question to extract insights from this webpage.
         </div>
       </div>
     </main>
 
-    <!-- TAB 2: DATA SCRAPER & EXPORTER -->
+    <!-- TAB 2: DATA SCRAPER -->
     <section id="tab-scraper" class="tab-content">
       <div class="card">
         <div class="card-header">
-          <span class="card-title">Data Scraper</span>
-          <span class="card-sub" id="scraperDetectedInfo">Scanning page...</span>
+          <span class="card-title">Data Extraction</span>
+          <span class="card-sub" id="scraperDetectedInfo">Scanning elements...</span>
         </div>
 
         <div class="scraper-select-group">
-          <label for="scraperTarget">Target Content:</label>
+          <label for="scraperTarget">Select Content Type:</label>
           <select id="scraperTarget" class="custom-select">
-            <option value="tables">📑 HTML Tables (<span id="countTables">0</span> found)</option>
-            <option value="links">🔗 Page Links & URLs (<span id="countLinks">0</span> found)</option>
-            <option value="lists">📋 Lists & Features (<span id="countLists">0</span> found)</option>
-            <option value="headings">📌 Headings Hierarchy (<span id="countHeadings">0</span> found)</option>
+            <option value="tables">📑 HTML Tables (<span id="countTables">0</span> detected)</option>
+            <option value="links">🔗 Page Links & URLs (<span id="countLinks">0</span> detected)</option>
+            <option value="lists">📋 Bullet & Numbered Lists (<span id="countLists">0</span> detected)</option>
+            <option value="headings">📌 Document Headings (<span id="countHeadings">0</span> detected)</option>
           </select>
         </div>
 
@@ -92,14 +93,14 @@
       <!-- Scraper Preview & Export Bar -->
       <div class="card scraper-results-card" id="scraperResultsCard" style="display: none;">
         <div class="results-header">
-          <span id="resultsCountLabel">Extracted 0 rows</span>
+          <span id="resultsCountLabel">Extracted records</span>
         </div>
 
         <div class="table-preview-container" id="tablePreviewContainer"></div>
 
         <!-- Export Buttons -->
         <div class="export-actions">
-          <button id="exportExcelBtn" class="export-btn export-excel" title="Download Excel .xlsx/.csv">
+          <button id="exportExcelBtn" class="export-btn export-excel" title="Download Excel (.csv / .xls)">
             <span class="btn-icon">📗</span> Excel (.csv)
           </button>
           <button id="exportPdfBtn" class="export-btn export-pdf" title="Export Formatted PDF">
@@ -112,8 +113,28 @@
       </div>
     </section>
 
-    <!-- TAB 3: TOOLS & UTILITIES -->
-    <section id="tab-tools" class="tab-content">
+    <!-- TAB 3: CAPTURE & TOOLS -->
+    <section id="tab-capture" class="tab-content">
+      <!-- Screenshot Capture Card -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">📸 Tab Screenshot</span>
+          <span class="card-sub" id="screenshotStatus">High-Res PNG</span>
+        </div>
+        <div class="screenshot-action-row">
+          <button id="captureTabBtn" class="primary-btn" style="flex: 1;">
+            📸 Capture & Download
+          </button>
+        </div>
+        <div id="screenshotPreviewContainer" class="screenshot-preview-box" style="display: none;">
+          <img id="screenshotPreviewImg" alt="Screenshot Preview" />
+          <div class="screenshot-actions-bar">
+            <button id="downloadCapturedImgBtn" class="mini-btn">💾 Save PNG</button>
+            <button id="copyCapturedImgBtn" class="mini-btn">📋 Copy Image</button>
+          </div>
+        </div>
+      </div>
+
       <!-- Text to Speech Card -->
       <div class="card">
         <div class="card-header">
@@ -121,9 +142,9 @@
           <span class="card-sub" id="ttsStatus">Ready</span>
         </div>
         <div class="tts-controls">
-          <button id="ttsPlayFullBtn" class="action-btn-compact">▶️ Play Page</button>
-          <button id="ttsPauseBtn" class="action-btn-compact">⏸️ Pause</button>
-          <button id="ttsStopBtn" class="action-btn-compact">⏹️ Stop</button>
+          <button id="ttsPlayFullBtn" class="action-btn-compact">▶ Play</button>
+          <button id="ttsPauseBtn" class="action-btn-compact">⏸ Pause</button>
+          <button id="ttsStopBtn" class="action-btn-compact">⏹ Stop</button>
           <select id="ttsSpeedSelect" class="custom-select-mini">
             <option value="0.8">0.8x</option>
             <option value="1.0" selected>1.0x</option>
@@ -142,15 +163,15 @@
             <span class="btn-label">Color Eyedropper</span>
           </button>
           <button id="highlightHeadingsBtn" class="action-btn">
-            <span class="btn-icon">✨</span>
+            <span class="btn-icon">✦</span>
             <span class="btn-label">Highlight Headings</span>
           </button>
           <button id="toggleFocusBtn" class="action-btn">
             <span class="btn-icon">📖</span>
-            <span class="btn-label">Reader Focus</span>
+            <span class="btn-label">Focus Reader</span>
           </button>
           <button id="copyCleanUrlBtn" class="action-btn">
-            <span class="btn-icon">📋</span>
+            <span class="btn-icon">🔗</span>
             <span class="btn-label">Copy Clean URL</span>
           </button>
         </div>
@@ -160,7 +181,7 @@
     <!-- TAB 4: NOTES -->
     <section id="tab-notes" class="tab-content">
       <div class="notes-container">
-        <textarea id="pageNoteInput" placeholder="Write a note for this webpage..."></textarea>
+        <textarea id="pageNoteInput" placeholder="Save a quick note for this webpage..."></textarea>
         <div class="note-actions">
           <button id="saveNoteBtn" class="primary-btn">Save Note</button>
           <button id="clearNoteBtn" class="secondary-btn">Clear</button>
@@ -171,7 +192,7 @@
 
     <!-- Footer -->
     <footer class="footer">
-      <span id="activeDomainLabel">Chrome Page</span>
+      <span id="activeDomainLabel">Chrome Tab</span>
       <span class="badge-dot" id="statusIndicator">● Ready</span>
     </footer>
   </div>
