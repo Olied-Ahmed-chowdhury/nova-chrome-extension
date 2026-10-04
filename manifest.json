@@ -1,14 +1,19 @@
 {
   "manifest_version": 3,
-  "name": "Nova Extension Starter",
-  "version": "1.0.0",
-  "description": "A modern, high-performance Chrome Extension template with popup UI, options page, background service worker, and content scripts.",
+  "name": "Nova - AI Web Assistant & Data Scraper",
+  "version": "2.0.0",
+  "description": "Supercharge your browsing with Gemini AI summaries, one-click Table & Data Scraper to Excel/PDF, Text-to-Speech, and productivity tools.",
   "permissions": [
     "storage",
     "activeTab",
     "scripting",
     "contextMenus",
-    "tabs"
+    "tabs",
+    "downloads"
+  ],
+  "host_permissions": [
+    "https://generativelanguage.googleapis.com/*",
+    "<all_urls>"
   ],
   "action": {
     "default_popup": "popup/popup.html",
@@ -17,7 +22,7 @@
       "48": "icons/icon48.png",
       "128": "icons/icon128.png"
     },
-    "default_title": "Nova Extension"
+    "default_title": "Nova AI Assistant & Data Scraper"
   },
   "options_page": "options/options.html",
   "background": {
@@ -30,6 +35,22 @@
       "css": ["scripts/content.css"]
     }
   ],
+  "commands": {
+    "_execute_action": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+K",
+        "mac": "Command+Shift+K"
+      },
+      "description": "Open Nova Assistant"
+    },
+    "quick_scrape": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+S",
+        "mac": "Command+Shift+S"
+      },
+      "description": "Scrape Page Data"
+    }
+  },
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
