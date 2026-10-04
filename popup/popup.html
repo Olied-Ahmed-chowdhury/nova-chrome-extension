@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nova Extension</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="header">
+      <div class="logo-group">
+        <div class="logo-icon">⚡</div>
+        <div class="brand">
+          <h1 class="brand-title">Nova</h1>
+          <span class="badge">v1.0.0</span>
+        </div>
+      </div>
+      <button id="openOptionsBtn" class="icon-button" title="Open Options">
+        ⚙️
+      </button>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="tab-nav">
+      <button class="tab-btn active" data-tab="tools">⚡ Actions</button>
+      <button class="tab-btn" data-tab="notes">📝 Notes</button>
+      <button class="tab-btn" data-tab="info">ℹ️ Tab Info</button>
+    </nav>
+
+    <!-- Tab 1: Tools / Actions -->
+    <main id="tab-tools" class="tab-content active">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Quick Page Tools</span>
+          <span class="card-sub" id="activeDomain">Loading...</span>
+        </div>
+        <div class="action-grid">
+          <button id="highlightBtn" class="action-btn">
+            <span class="btn-icon">✨</span>
+            <span class="btn-label">Highlight Headings</span>
+          </button>
+          <button id="extractLinksBtn" class="action-btn">
+            <span class="btn-icon">🔗</span>
+            <span class="btn-label">Count Links</span>
+          </button>
+          <button id="copyUrlBtn" class="action-btn">
+            <span class="btn-icon">📋</span>
+            <span class="btn-label">Copy Clean URL</span>
+          </button>
+          <button id="readingModeBtn" class="action-btn">
+            <span class="btn-icon">📖</span>
+            <span class="btn-label">Toggle Focus Mode</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="status-box" id="statusMessage">
+        Ready to supercharge your workflow.
+      </div>
+    </main>
+
+    <!-- Tab 2: Notes -->
+    <section id="tab-notes" class="tab-content">
+      <div class="notes-container">
+        <textarea id="pageNoteInput" placeholder="Write a quick note for this page..."></textarea>
+        <div class="note-actions">
+          <button id="saveNoteBtn" class="primary-btn">Save Note</button>
+          <button id="clearNoteBtn" class="secondary-btn">Clear</button>
+        </div>
+      </div>
+      <div id="savedNotesList" class="saved-notes-list"></div>
+    </section>
+
+    <!-- Tab 3: Tab Info -->
+    <section id="tab-info" class="tab-content">
+      <div class="info-card">
+        <div class="info-row">
+          <span class="info-label">Title:</span>
+          <span class="info-value" id="infoTitle">-</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">URL:</span>
+          <span class="info-value text-truncate" id="infoUrl">-</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Status:</span>
+          <span class="info-value" id="infoStatus">-</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <span>Powered by Manifest V3</span>
+      <span class="badge-dot">● Active</span>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
