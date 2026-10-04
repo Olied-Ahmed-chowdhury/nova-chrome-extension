@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nova Extension - Settings</title>
+  <link rel="stylesheet" href="options.css" />
+</head>
+<body>
+  <div class="settings-wrapper">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-badge">⚡</div>
+        <div class="brand-text">
+          <h2>Nova</h2>
+          <span>Settings</span>
+        </div>
+      </div>
+      <nav class="settings-nav">
+        <button class="nav-item active" data-section="general">⚙️ General</button>
+        <button class="nav-item" data-section="tools">🛠️ Tool Preferences</button>
+        <button class="nav-item" data-section="about">ℹ️ About & System</button>
+      </nav>
+    </aside>
+
+    <main class="content-area">
+      <!-- Section 1: General -->
+      <section id="section-general" class="settings-section active">
+        <div class="section-header">
+          <h2>General Settings</h2>
+          <p>Configure extension behavior, appearance, and sync options.</p>
+        </div>
+
+        <div class="setting-group">
+          <div class="setting-row">
+            <div class="setting-info">
+              <label for="floatingButtonToggle">Show Floating Quick-Action Pill on Webpages</label>
+              <span class="setting-desc">Injects a discrete floating helper on websites for one-click tools.</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="floatingButtonToggle" checked />
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-info">
+              <label for="autoCleanUrls">Automatic URL Tracking Remover</label>
+              <span class="setting-desc">Automatically strip UTM and telemetry queries when copying links.</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="autoCleanUrls" checked />
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 2: Tool Preferences -->
+      <section id="section-tools" class="settings-section">
+        <div class="section-header">
+          <h2>Tool Preferences</h2>
+          <p>Customize highlight colors and shortcut behavior.</p>
+        </div>
+
+        <div class="setting-group">
+          <div class="setting-row">
+            <div class="setting-info">
+              <label for="highlightColor">Heading Highlight Accent Color</label>
+              <span class="setting-desc">The glow color applied when highlighting webpage elements.</span>
+            </div>
+            <input type="color" id="highlightColor" value="#6366f1" class="color-picker" />
+          </div>
+
+          <div class="setting-row">
+            <div class="setting-info">
+              <label for="badgeNotification">Show Tab Badge Count</label>
+              <span class="setting-desc">Display active badge indicators on the extension toolbar icon.</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="badgeNotification" checked />
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 3: About -->
+      <section id="section-about" class="settings-section">
+        <div class="section-header">
+          <h2>About Nova Extension</h2>
+          <p>Version details and manifest diagnostics.</p>
+        </div>
+
+        <div class="card-info">
+          <div class="info-row">
+            <span>Manifest Specification:</span>
+            <strong>Manifest V3</strong>
+          </div>
+          <div class="info-row">
+            <span>Runtime Engine:</span>
+            <strong id="browserEngine">Chromium</strong>
+          </div>
+          <div class="info-row">
+            <span>Storage Status:</span>
+            <span class="status-online">● Synced & Healthy</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Save Bar -->
+      <div class="save-bar">
+        <span id="saveStatus" class="save-status">All changes saved automatically.</span>
+        <button id="resetDefaultsBtn" class="danger-btn">Reset Defaults</button>
+      </div>
+    </main>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>
