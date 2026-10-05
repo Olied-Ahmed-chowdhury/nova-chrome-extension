@@ -2,6 +2,8 @@
 
 <div align="center">
 
+<img src="showcase_banner.jpg" alt="Nova AI Showcase Banner" width="100%" style="border-radius: 12px; margin-bottom: 16px;" />
+
 ![Manifest V3](https://img.shields.io/badge/Manifest-V3-0284c7?style=for-the-badge&logo=googlechrome&logoColor=white)
 ![AI Engine](https://img.shields.io/badge/AI_Engine-Groq_LLaMA_/_GPT--OSS-38bdf8?style=for-the-badge&logo=openai&logoColor=white)
 ![Data Export](https://img.shields.io/badge/Data_Export-Excel_|_PDF_|_JSON-10b981?style=for-the-badge)
@@ -89,6 +91,29 @@ nova-chrome-extension/
 * `Ctrl + Shift + K` (Mac: `Cmd + Shift + K`) — Open Nova Popup
 * `Ctrl + Shift + X` (Mac: `Cmd + Shift + X`) — Capture Tab Screenshot
 * `Ctrl + Shift + S` (Mac: `Cmd + Shift + S`) — Quick Scrape Current Page
+
+---
+
+## 🧠 What I Learned & Key Technical Takeaways
+
+1. **Manifest V3 Architecture & Lifecycle**:
+   * Transitioned from legacy background pages to modern, event-driven Service Workers.
+   * Handled asynchronous cross-context message passing between Content Scripts, Service Worker, and Toolbar Popups.
+   * Managed reliable extension state and user settings across sessions using `chrome.storage.sync`.
+
+2. **Ultra-Fast AI Inference with Groq Cloud**:
+   * Integrated high-throughput Groq REST endpoints for sub-second page comprehension and Q&A.
+   * Engineered dynamic DOM context extraction and custom system prompts tailored for web summarization.
+   * Built flexible model-switching logic between **GPT-OSS 120B**, **Qwen 3.8 27B**, and **GPT-OSS 20B**.
+
+3. **Client-Side Data Scraping & File Generation**:
+   * Developed an HTML DOM parser that auto-detects `<table>` structures, links, and headings.
+   * Implemented pure client-side CSV/Excel file compilation with **UTF-8 BOM encoding** to prevent character corruption in Microsoft Excel and Google Sheets.
+   * Crafted a custom printable PDF document generator with print stylesheets directly in JavaScript without heavy external dependencies.
+
+4. **Security & Content Security Policy (CSP)**:
+   * Maintained compliance with strict Chrome Web Store Manifest V3 security rules (no remote script execution, isolated script scopes).
+   * Built URL sanitizer routines to strip invasive tracking parameters (`utm_*`, `fbclid`, `gclid`).
 
 ---
 
