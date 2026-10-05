@@ -1,0 +1,25 @@
+# OS metadata files
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+.DS_Store
+
+# Node / NPM
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment & Secrets
+.env
+.env.local
+*.log
+
+# IDE / Editor folders
+.vscode/
+.idea/
+.agents/
+.gemini/
